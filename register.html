@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Register</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <script  type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="js/materialize.min.js"></script>
+  <script type="text/javascript" src="js/angular.min.js"></script>
+  <script type="text/javascript" src="js/alertify.min.js"></script>
+  <link rel="stylesheet" href="css/materialize.min.css" />
+  <!--<link rel="stylesheet" href="css/register.css">-->
+  <link rel="stylesheet" href="fonts/material icons/icons.css"/>
+  <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.css" />
+  <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css"/>
+  <link rel="stylesheet" href="css/alertify.min.css"/>
+  <link rel="stylesheet" href="css/semantic.min.css"/>
+
+  <style type="text/css">
+  .form-header{
+    background-color: #26A69A;
+    line-height: 60px;
+    padding-top:40px;
+    margin-top:0px;
+    color: white;
+    border-radius: 6px;
+  }
+  .r-form-cont{
+      border: solid 0.5px #26A69A;
+      margin-top: 60px;
+      border-radius: 10px
+    }
+    .error{
+      color:tomato;
+    }
+    #input-error{
+      margin-right: 130px;
+    }
+  </style>
+</head>
+<body>
+	<div class="container center r-form-cont">
+    <h4 class="form-header">STUDENT REGISTRATION</h4>
+<div class="row">
+  <div class="col l2">
+  </div>
+    <form class="col l7" id="reg-form">
+      <div class="row">
+        <div class="input-field col s12 m6 l6">
+          <input style=" border: solid 1px darkgray; border-radius:0px; id="first_name" type="text" name="firstName" required="true">
+          <label for="first_name">First Name</label>
+        </div>
+        <div class="input-field col s12 m6 l6">
+          <input style=" border: solid 1px darkgray;  border-radius:0px;" id="last_name" type="text" name="lastName" required="true">
+          <label for="last_name">Last Name</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12 m6 l6">
+          <input style=" border: solid 1px darkgray; border-radius:0px;" id="email" type="email" name="email" required="true">
+          <label for="email">Email</label>
+        </div>
+        <div class="input-field col col s12 m6 l6">
+          <input style=" border: solid 1px darkgray;  border-radius:0px;" id="studentId" type="text" name="studentId" required="true">
+          <label for="studentId">student Id</label>
+          <span class="error" id="student_id_error"> </span>
+        </div>
+      </div>
+      <div class="row">
+        <div  class="input-field col s12 m6 l6">
+          <input style=" border: solid 1px darkgray;  border-radius:0px;" id="password" type="password" name="password" required="true">
+          <label for="password">Password</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="input-field col s6">
+          <span class="error" id="input-error"></span> <br>
+          <span class="error" id="server-error"></span>
+          <button style="background-color:#26A69A;color:white; margin-right:130px" id="submit-details" class="btn" >Register
+          </button>
+          <span class="feedback" id="register-complete"></span>
+        </div>
+      </div>
+    </form>
+    <div class="col l7">
+  </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(function(){
+    //get the form
+    var form = $('#reg-form');
+
+    //prevent form submission
+    $(form).submit(function(event){
+      event.preventDefault();
+    });
+
+    //event listener to intercept form submission events
+    $('#submit-details').click(function(){
+
+      //serialising the form data
+      var formInput = $(form).serialize();
+
+      //form submission using ajax
+      $.ajax({
+        type: 'POST',
+        url: 'http://localhost/includes/user_registration.php',
+        data: formInput,
+        dataType: 'json',
+        success:function(response){
+          console.log(response)
+          if (response.inputError) {
+            $('#input-error').html(response.inputError)
+          }else{
+            $('#input-error').html('')
+          }
+
+          if (response.studentIdError) {
+            $('#student_id_error').html(response.studentIdError)
+          }else{
+            $('#student_id_error').html('')
+          }
+
+          if (response.existing_user_alert) {
+            $('#student_id_error').html(response.existing_user_alert)
+          }else{
+            $('#student_id_error').html('')
+          }
+
+          if (response.registration_alert == 'registration success') {
+            $('.error').html('')
+            $('#register-complete').html('registration complete')
+            $(form)[0].reset();
+          }
+        },
+         error:function(err){
+          console.log(err)
+        }
+      })
+    });
+  });
+</script>
+</body>
+<script type="text/javascript">
+	$(document).ready(function() {
+  $('select').material_select();
+});
+</script>
+
+
+</html>
